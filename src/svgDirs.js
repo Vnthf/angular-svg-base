@@ -48,8 +48,13 @@
 
                 //Assumes no expressions, since svg is unforgiving of xml violations
                 initialUrl = attrs[attr];
-                attrs.$observe(attr, updateValue);
-                $rootScope.$on('$locationChangeSuccess', updateValue);
+                var observeHandler = attrs.$observe(attr, updateValue);
+                var watchHandler = scope.$on('$locationChangeSuccess', updateValue);
+
+                scope.$on('$destroy', function(){
+                    observeHandler();
+                    watchHandler();
+                });
 
                 function updateValue () {
                   var newVal = computeSVGAttrValue(initialUrl);
